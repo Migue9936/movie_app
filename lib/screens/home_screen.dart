@@ -15,25 +15,37 @@ class HomeScreen extends StatelessWidget {
     return  Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-                FadeInImage(
-                  placeholder: NetworkImage(''), 
-                  image: AssetImage('assets/cinesunidos.png'),
-                  height: 60,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 200), //ancho máximo del contenedor
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FutureBuilder(
+                  future: precacheImage(AssetImage('assets/cinesunidos.png'), context),
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return FadeInImage(
+                        placeholder: AssetImage('assets/placeholder_image.png'),
+                        image: AssetImage('assets/cinesunidos.png'),
+                        height: 60,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
                 SizedBox(width: 8),
                 Text('Cinesunidos'),
-                
-            ],
+              ],
+            ),
           ),
         ),
         elevation: 0,
         centerTitle: true,
         actions: [
-            IconButton(icon: const Icon(Icons.search_outlined),
-            onPressed:() => showSearch(context: context, delegate: MovieSearchDelegate()),
+          IconButton(
+            icon: const Icon(Icons.search_outlined),
+            onPressed: () => showSearch(context: context, delegate: MovieSearchDelegate()),
           ) 
         ],
       ),
@@ -46,7 +58,7 @@ class HomeScreen extends StatelessWidget {
             MovieSlider(movies: moviesProvider.popularMovies,title: 'Most Popular!'),
           ]
         ),
-      )
+      ),
     );
   }
 }
